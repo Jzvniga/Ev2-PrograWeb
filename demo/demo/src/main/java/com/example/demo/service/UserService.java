@@ -8,9 +8,12 @@ import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -30,13 +33,15 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setActive(true);
 
-        // Busca el rol LECTOR o créalo si no existe
-        Role lectorRole = getOrCreateRole("LECTOR");
-        user.setRoles(Collections.singleton(lectorRole));
+        List<Role> roles = userDTO.getRoles().stream()
+            .map(roleName -> roleRepository.findByName(roleName).orElseThrow(() ->
+                new RuntimeException("Rol no encontrado: " + roleName)))
+            .toList();
 
+        user.setRoles(new HashSet<>(roles));
         return userRepository.save(user);
     }
-    
+
     private Role getOrCreateRole(String roleName) {
         Optional<Role> roleOpt = roleRepository.findByName(roleName);
         if (roleOpt.isPresent()) {

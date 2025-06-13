@@ -36,30 +36,31 @@ public class AuthController {
         return userService.registerUser(userDTO);
     }
 
-@PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
-    Optional<User> userOptional = userRepository.findByEmail(loginDTO.getEmail());
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+        Optional<User> userOptional = userRepository.findByEmail(loginDTO.getEmail());
 
-    if (userOptional.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
-    }
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado");
+        }
 
-    User user = userOptional.get();
+        User user = userOptional.get();
 
-    if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
-    }
+        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Contraseña incorrecta");
+        }
 
-    // Obtener el primer rol del usuario
-    String role = user.getRoles().stream()
-                      .findFirst()
-                      .map(r -> r.getName())
-                      .orElse("USER");
+        // Obtener el primer rol del usuario
+            String role = user.getRoles().stream()
+                .map(r -> r.getName())
+                .filter(r -> r.equals("ADMIN"))
+                .findFirst()
+                .orElse("LECTOR"); 
 
-    // Generar el token JWT
-    String token = jwtUtil.generateToken(user.getEmail(), role);
+        // Generar el token JWT
+        String token = jwtUtil.generateToken(user.getEmail(), role);
 
-    // Retornar el token
-    return ResponseEntity.ok().body(Map.of("token", token));
+        // Retornar el token
+        return ResponseEntity.ok().body(Map.of("token", token));
 }
 }

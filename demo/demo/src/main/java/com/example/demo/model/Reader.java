@@ -2,11 +2,14 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class Reader {
 
     @Id
@@ -18,4 +21,6 @@ public class Reader {
     private User user;
 
     private Boolean estado = true; // true = activo, false = multado o bloqueado
+    
+    
 }
