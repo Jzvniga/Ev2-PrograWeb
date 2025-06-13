@@ -23,7 +23,7 @@ Postman (para pruebas manuales de endpoints)
 
 ⚙️ Requisitos Previos
 
-Tener PostgreSQL activo y accesible con una base de datos creada.
+Tener PostgreSQL activo y accesible con una base de datos creada con el nombre "biblioteca".
 
 Configurar correctamente las credenciales de conexión en application.properties:
 
