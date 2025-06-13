@@ -1,6 +1,7 @@
 Evaluación II - Backend
 
-Estudiante: Jose ZúñigaCarrera: Ingeniería Civil Informática - Universidad Católica del MauleAsignatura: Programación WebProyecto: Sistema de Gestión de Biblioteca (Back-End Spring Boot)
+Estudiante: Jose ZúñigaCarrera
+Ingeniería Civil Informática - Universidad Católica del Maule
 
 📘 Introducción
 
