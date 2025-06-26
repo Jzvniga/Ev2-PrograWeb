@@ -9,4 +9,5 @@
         "default": true
     }
     ],
+    "java.debug.settings.onBuildFailureProceed": true,
 }

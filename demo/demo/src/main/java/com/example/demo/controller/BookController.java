@@ -9,9 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+
 import com.example.demo.service.BookCopyService;
+
+import java.io.IOException;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/book")
 public class BookController {
@@ -25,8 +32,9 @@ public class BookController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('LECTOR') or hasAuthority('ADMIN')")
     public ResponseEntity<List<Book>> getAllBooks() {
+            System.out.println(">>> USER: " + SecurityContextHolder.getContext().getAuthentication().getName());
+            System.out.println(">>> AUTH: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
         return ResponseEntity.ok(bookService.getAllActiveBooks());
     }
 
@@ -36,17 +44,27 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBooksByType(type));
     }
 
-    @PostMapping("/new")
+    @PostMapping(value = "/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Book> createBook(@RequestBody BookDTO bookDTO) {
-        return ResponseEntity.ok(bookService.createBook(bookDTO));
-    }
+    public ResponseEntity<Book> createBookWithImage(
+        @RequestParam("title") String title,
+        @RequestParam("author") String author,
+        @RequestParam("type") String type,
+        @RequestParam("image") MultipartFile imageFile) throws IOException {
 
+        return ResponseEntity.ok(bookService.createBookWithImage(title, author, type, imageFile));
+    }
     @PostMapping("/newcopy")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BookCopy> createCopy(@RequestBody BookCopyDTO dto) {
         System.out.println(">>> AUTORIDADES: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
         return ResponseEntity.ok(bookCopyService.createCopy(dto));
+    }
+
+    @GetMapping("/disponibles/{bookId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<BookCopy>> getCopiasDisponibles(@PathVariable Long bookId) {
+        return ResponseEntity.ok(bookCopyService.getDisponiblesPorLibro(bookId));
     }
 
     @GetMapping("/find/{title}")

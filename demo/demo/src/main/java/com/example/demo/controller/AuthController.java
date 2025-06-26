@@ -9,12 +9,16 @@ import com.example.demo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.service.UserService;
 import java.util.Optional;
 import java.util.Map;
+import java.util.List;
+import com.example.demo.service.UserService;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -31,9 +35,21 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/register")
     public User register(@RequestBody UserDTO userDTO) {
+        userDTO.setRoles(List.of("LECTOR"));
         return userService.registerUser(userDTO);
+    }
+    @PostMapping("/register-lector")
+    public ResponseEntity<?> registerLector(@RequestBody UserDTO userDTO) {
+    try {
+        userService.registerLector(userDTO);
+        return ResponseEntity.ok("Lector registrado exitosamente");
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+    }
     }
 
     @PostMapping("/login")
@@ -61,6 +77,10 @@ public class AuthController {
         String token = jwtUtil.generateToken(user.getEmail(), role);
 
         // Retornar el token
-        return ResponseEntity.ok().body(Map.of("token", token));
+        return ResponseEntity.ok().body(Map.of(
+            "token", token,
+            "role", role
+     
+));
 }
 }

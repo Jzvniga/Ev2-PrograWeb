@@ -53,4 +53,11 @@ public class BookingController {
     public ResponseEntity<List<Booking>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
+    @GetMapping("/mine")
+    @PreAuthorize("hasAuthority('LECTOR')")
+    public ResponseEntity<List<Booking>> getMyBookings(Authentication auth) {
+    String email = auth.getName();
+    List<Booking> bookings = bookingService.getBookingsByEmail(email);
+    return ResponseEntity.ok(bookings);
+}
 }

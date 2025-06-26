@@ -13,13 +13,16 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Lob
+    @Column(name = "image", columnDefinition = "TEXT")
+    private String image;
+
+    @Column(unique = true)
     private String title;
 
     private String author;
 
     private String type; // novela, educación, etc.
 
-    private Boolean active = true; // se usa para mostrar u ocultar
-
-    // Getters y Setters
+    private Boolean active = true;
 }

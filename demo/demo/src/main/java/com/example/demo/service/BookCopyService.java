@@ -6,6 +6,7 @@ import com.example.demo.model.BookCopy;
 import com.example.demo.repository.BookCopyRepository;
 import com.example.demo.repository.BookRepository;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class BookCopyService {
@@ -24,5 +25,9 @@ public class BookCopyService {
         copy.setBook(book);
         copy.setDisponible(true);
         return bookCopyRepository.save(copy);
+    }
+
+    public List<BookCopy> getDisponiblesPorLibro(Long bookId) {
+        return bookCopyRepository.findByBook_IdAndDisponibleTrue(bookId);
     }
 }
