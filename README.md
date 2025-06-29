@@ -49,7 +49,7 @@ LECTOR: Acceso restringido a consultas sobre libros, sus propios préstamos y mu
 {
   "email": "admin1@ejemplo.com",
   "password": "123456",
-  "role": "ADMIN"
+  "roles": ["ADMIN"]
 }
 
 **POST **/auth/login → Retorna un token JWT.Body ejemplo:
@@ -69,12 +69,36 @@ GET /book/all → Lista todos los libros (ADMIN y LECTOR).
 
 GET /book/all/{type} → Filtra por tipo.
 
-POST /book/new → Crea libro (solo ADMIN).Body:
+**POST /book/new**
 
+- Requiere token de administrador (Authorization: Bearer TOKEN)
+- Content-Type: multipart/form-data
+
+**Parámetros del formulario:**
+- `title`: Título del libro (string)
+- `author`: Autor del libro (string)
+- `type`: Tipo o categoría (string)
+- `image`: Archivo de imagen (multipart)
+
+**Ejemplo en Postman:**
+- Method: POST
+- URL: http://localhost:8087/book/new
+- Authorization: Bearer tu_token_admin
+- Body: form-data
+    - title = "1984"
+    - author = "George Orwell"
+    - type = "Novela"
+    - image = (selecciona una imagen desde tu equipo)
+
+**Respuesta esperada (201):**
+```json
 {
+  "id": 1,
   "title": "1984",
   "author": "George Orwell",
-  "type": "Novela"
+  "type": "Novela",
+  "image": "base64...",
+  "active": true
 }
 
 POST /book/newcopy → Crea copia disponible.Body:
@@ -85,14 +109,14 @@ POST /book/newcopy → Crea copia disponible.Body:
 
 GET /book/find/{title} → Busca libro por título.
 
-GET /book/copy/{title} → Lista copias por título.
+GET /book/disponibles/{bookId} → Lista copias por título.
 
 3. Endpoints de Préstamos
 
 POST /booking/newBody:
 
 {
-  "readerEmail": "usuario@ejemplo.com",
+  "email": "usuario@ejemplo.com",
   "bookId": 5
 }
 
