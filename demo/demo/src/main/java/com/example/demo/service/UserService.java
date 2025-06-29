@@ -35,7 +35,10 @@ public class UserService {
     private ReaderRepository readerRepository;
 
     public User registerUser(UserDTO userDTO) {
+            System.out.println(">>> Email: " + userDTO.getEmail());
+            System.out.println(">>> Roles recibidos: " + userDTO.getRoles());
         User user = new User();
+        
         user.setEmail(userDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setActive(true);
@@ -48,13 +51,7 @@ public class UserService {
         user.setRoles(new HashSet<>(roles));
         User savedUser = userRepository.save(user);
 
-        // Si es lector, crear entrada en tabla reader
-        boolean esLector = roles.stream().anyMatch(r -> r.getName().equalsIgnoreCase("LECTOR"));
-        if (esLector) {
-            Reader reader = new Reader();
-            reader.setUser(savedUser);
-            readerRepository.save(reader);
-        }
+
 
         return savedUser;
     }

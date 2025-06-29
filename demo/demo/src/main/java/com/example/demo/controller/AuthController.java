@@ -36,10 +36,9 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     
-    @PreAuthorize("hasAuthority('ADMIN')")
+    
     @PostMapping("/register")
     public User register(@RequestBody UserDTO userDTO) {
-        userDTO.setRoles(List.of("LECTOR"));
         return userService.registerUser(userDTO);
     }
     @PostMapping("/register-lector")
