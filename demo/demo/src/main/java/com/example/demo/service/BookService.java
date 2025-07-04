@@ -50,4 +50,5 @@ public class BookService {
     public Book findBookByTitle(String title) {
         return bookRepository.findByTitleIgnoreCaseAndActiveTrue(title).orElse(null);
     }
+
 }

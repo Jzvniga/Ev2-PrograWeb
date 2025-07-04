@@ -56,15 +56,14 @@ public class BookController {
     }
     @PostMapping("/newcopy")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<BookCopy> createCopy(@RequestBody BookCopyDTO dto) {
-        System.out.println(">>> AUTORIDADES: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+    public ResponseEntity<BookCopyDTO> createCopy(@RequestBody BookCopyDTO dto) {
         return ResponseEntity.ok(bookCopyService.createCopy(dto));
     }
 
     @GetMapping("/disponibles/{bookId}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<BookCopy>> getCopiasDisponibles(@PathVariable Long bookId) {
-        return ResponseEntity.ok(bookCopyService.getDisponiblesPorLibro(bookId));
+    public ResponseEntity<List<BookCopyDTO>> getCopiasDisponibles(@PathVariable Long bookId) {
+        return ResponseEntity.ok(bookCopyService.getDisponiblesDTO(bookId));
     }
 
     @GetMapping("/find/{title}")
@@ -76,4 +75,6 @@ public class BookController {
         }
         return ResponseEntity.ok(book);
     }
+    
+
 }

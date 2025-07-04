@@ -19,15 +19,26 @@ public class BookCopyService {
         this.bookRepository = bookRepository;
     }
 
-    public BookCopy createCopy(BookCopyDTO dto) {
+    public BookCopyDTO createCopy(BookCopyDTO dto) {
         Book book = bookRepository.findById(dto.getBookId()).orElseThrow();
         BookCopy copy = new BookCopy();
         copy.setBook(book);
         copy.setDisponible(true);
-        return bookCopyRepository.save(copy);
+
+        BookCopy saved = bookCopyRepository.save(copy);
+
+        return new BookCopyDTO(
+            saved.getId(),
+            book.getId(),
+            book.getTitle(),
+            book.getAuthor(),
+            book.getType(),
+            saved.getDisponible()
+        );
     }
 
-    public List<BookCopy> getDisponiblesPorLibro(Long bookId) {
-        return bookCopyRepository.findByBook_IdAndDisponibleTrue(bookId);
+    public List<BookCopyDTO> getDisponiblesDTO(Long bookId) {
+        return bookCopyRepository.findDTOByBookIdAndDisponibleTrue(bookId);
     }
+
 }

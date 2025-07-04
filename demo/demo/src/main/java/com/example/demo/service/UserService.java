@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.example.demo.model.Reader;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.Collections;
@@ -35,23 +36,39 @@ public class UserService {
     private ReaderRepository readerRepository;
 
     public User registerUser(UserDTO userDTO) {
-            System.out.println(">>> Email: " + userDTO.getEmail());
-            System.out.println(">>> Roles recibidos: " + userDTO.getRoles());
+        System.out.println(">>> Email: " + userDTO.getEmail());
+        System.out.println(">>> Roles recibidos: " + userDTO.getRoles());
+
         User user = new User();
-        
         user.setEmail(userDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setActive(true);
 
         List<Role> roles = userDTO.getRoles().stream()
-            .map(roleName -> roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + roleName)))
+            .map(this::getOrCreateRole)
             .toList();
 
         user.setRoles(new HashSet<>(roles));
         User savedUser = userRepository.save(user);
 
+        System.out.println(">>> DEBUG: Revisión de roles asignados al usuario:");
+        roles.forEach(role -> {
+            System.out.println("  - role.getId(): " + role.getId());
+            System.out.println("  - role.getName(): " + role.getName());
+        });
 
+        boolean esLector = roles.stream()
+            .map(Role::getName)
+            .filter(name -> name != null)
+            .anyMatch(name -> name.equalsIgnoreCase("LECTOR"));
+
+        if (esLector) {
+            Reader reader = new Reader();
+            reader.setUser(savedUser);
+            reader.setEstado(true);
+            readerRepository.save(reader);
+            System.out.println(">>> Reader creado para: " + savedUser.getEmail());
+        }
 
         return savedUser;
     }

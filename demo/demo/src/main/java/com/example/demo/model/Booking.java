@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -18,8 +20,9 @@ public class Booking {
     @JoinColumn(name = "reader_id")
     private Reader reader;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "book_copy_id")
+    @JsonIgnoreProperties({"book", "hibernateLazyInitializer", "handler"})
     private BookCopy bookCopy;
 
     private LocalDate fechaInicio;

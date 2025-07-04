@@ -1,5 +1,7 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +16,9 @@ public class Book {
     private Long id;
 
     @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "image", columnDefinition = "TEXT")
+    @JsonIgnore
     private String image;
 
     @Column(unique = true)

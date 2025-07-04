@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.BookingDTO;
 import com.example.demo.dto.BookingRequestDTO;
 import com.example.demo.model.Booking;
 import com.example.demo.service.BookingService;
@@ -25,9 +26,12 @@ public class BookingController {
     public ResponseEntity<List<Booking>> getBookingsByEmail(@PathVariable String email, Authentication auth) {
         String currentEmail = auth.getName();
 
-        if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("LECTOR"))) {
+        // Solo si es LECTOR, valida que sea su propio email
+        if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("LECTOR")) &&
+            auth.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ADMIN"))) {
+            
             if (!email.equals(currentEmail)) {
-                return ResponseEntity.status(403).build(); 
+                return ResponseEntity.status(403).build();
             }
         }
 
@@ -55,9 +59,9 @@ public class BookingController {
     }
     @GetMapping("/mine")
     @PreAuthorize("hasAuthority('LECTOR')")
-    public ResponseEntity<List<Booking>> getMyBookings(Authentication auth) {
-    String email = auth.getName();
-    List<Booking> bookings = bookingService.getBookingsByEmail(email);
-    return ResponseEntity.ok(bookings);
-}
+    public ResponseEntity<List<BookingDTO>> getMyBookings(Authentication auth) {
+        String email = auth.getName();
+        List<BookingDTO> bookings = bookingService.getBookingsDTOByEmail(email);
+        return ResponseEntity.ok(bookings);
+    }
 }
