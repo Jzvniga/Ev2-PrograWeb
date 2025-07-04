@@ -18,7 +18,6 @@ public class Book {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "image", columnDefinition = "TEXT")
-    @JsonIgnore
     private String image;
 
     @Column(unique = true)
